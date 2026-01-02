@@ -182,36 +182,6 @@ curl http://localhost:8080/messages \
 curl http://localhost:8080/health
 ```
 
-## Project Structure
-
-```
-taskchat/
-├── cmd/server/
-│   └── main.go              # Application entry point
-├── internal/
-│   ├── config/
-│   │   └── config.go        # Configuration management
-│   ├── handlers/
-│   │   ├── handlers.go      # HTTP request handlers
-│   │   └── dto.go           # Request/Response DTOs
-│   ├── middleware/
-│   │   └── auth.go          # JWT authentication middleware
-│   ├── models/
-│   │   └── models.go        # Domain models
-│   ├── repository/
-│   │   ├── interfaces.go    # Repository interfaces
-│   │   └── mongo/           # MongoDB implementations
-│   ├── service/
-│   │   ├── auth.go          # Authentication service (includes JWT)
-│   │   ├── chat.go          # Chat service
-│   │   └── tinode.go        # Tinode integration
-│   └── mocks/               # Test mocks
-├── docker-compose.yml       # Docker services
-├── Dockerfile               # Multi-stage build
-├── Makefile                 # Build automation
-└── README.md
-```
-
 ## Environment Variables
 
 | Variable | Default | Description |
@@ -221,7 +191,6 @@ taskchat/
 | `MONGODB_DATABASE` | chat_db | Database name |
 | `TINODE_HOST` | tinode | Tinode server host |
 | `TINODE_PORT` | 6060 | Tinode server port |
-| `TINODE_API_KEY` | AQEAAAABAAD_rAp4DJh05a1HAwFT3A6K | Tinode API key |
 | `TINODE_SERVICE_LOGIN` |  | Service login for backend Tinode session (optional) |
 | `TINODE_SERVICE_PASSWORD` |  | Service password for backend Tinode session (optional) |
 | `JWT_SECRET` | change-in-prod | Secret key for JWT signing |
