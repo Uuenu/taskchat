@@ -1,0 +1,70 @@
+services:
+  # MongoDB - Primary database for users and messages
+  mongodb:
+    image: mongo:7.0
+    container_name: chat-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: chat_db
+    volumes:
+      - mongodb_data:/data/db
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chat-network
+
+  # Tinode Server - Real-time messaging
+  tinode:
+    image: tinode/tinode:latest
+    container_name: chat-tinode
+    restart: unless-stopped
+    environment:
+      # Use MongoDB as Tinode's backend
+      STORE_USE_ADAPTER: mongodb
+      STORE_MONGODB_ADDRESSES: mongodb:27017
+      STORE_MONGODB_DATABASE: tinode
+      # Server configuration
+      PLUGIN_DEBUG: "false"
+      WAIT_FOR: mongodb:27017
+    ports:
+      - "6060:6060"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - chat-network
+
+  # Go Chat Backend API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: chat-api
+    restart: unless-stopped
+    environment:
+      SERVER_PORT: "8080"
+      MONGODB_URI: "mongodb://mongodb:27017"
+      MONGODB_DATABASE: "chat_db"
+      TINODE_HOST: "tinode"
+      TINODE_PORT: "6060"
+      JWT_SECRET: "${JWT_SECRET:-your-super-secret-key-change-in-production}"
+      GIN_MODE: "release"
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mongodb
+      - tinode
+    networks:
+      - chat-network
+
+networks:
+  chat-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
