@@ -4,8 +4,7 @@
 *.dll
 *.so
 *.dylib
-server
-bin/
+bin/f
 
 # Test binary
 *.test
